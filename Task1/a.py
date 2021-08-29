@@ -1,29 +1,25 @@
+import matplotlib.pyplot as plt
+import pandas as pd
 import torch
 import torch.nn.functional
-import matplotlib
-import matplotlib.pyplot as plt
 
-
-# Henter inn data
-# Lager en modell med valgt w og b
-# Tester loss for modellen
-# Optimaliserer w og b
 
 class Model(torch.nn.Module):
     def __init__(self):
         super().__init__()
-        self.w = torch.nn.Parameter(torch.tensor([0.5], requires_grad=True))
-        self.b = torch.nn.Parameter(torch.tensor([0.5], requires_grad=True))
+        self.w = torch.nn.Parameter(torch.reshape(torch.tensor([0.5], requires_grad=True), (1, -1)))
+        self.b = torch.nn.Parameter(torch.reshape(torch.tensor([0.5], requires_grad=True), (1, -1)))
 
     def forward(self, x):
-        return self.w @ x + self.b
+        return x @ self.w + self.b
 
 
 def main():
-    x_train = torch.reshape(torch.tensor([1, 2, 2], dtype=torch.float), (1, 3))
-    y_train = torch.reshape(torch.tensor([[1,2,2]], dtype=torch.float), (1,3))
-    learning_rate = 0.1
-    num_epoch = 10
+    data = pd.read_csv("length_weight.csv")
+    x_train = torch.reshape(torch.tensor(data.pop("length").to_numpy(), dtype=torch.float), (-1, 1))
+    y_train = torch.reshape(torch.tensor(data.pop("weight").to_numpy(), dtype=torch.float), (-1, 1))
+    learning_rate = 0.0001
+    num_epoch = 500000
 
     model = Model()
     loss_fun = torch.nn.MSELoss(reduction="mean")
@@ -32,13 +28,21 @@ def main():
     for epoch in range(num_epoch):
         y_hat = model(x_train)
         loss = loss_fun(y_train, y_hat)
+        optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        optimizer.zero_grad()
+
     print(model.state_dict())
-    print(loss_fun(y_train, y_hat))
+    print(f"Loss: {loss_fun(y_train, y_hat)}")
 
     plt.title("Linear regression 2d")
+    plt.xlabel("x")
+    plt.ylabel("y")
+
+    # Plots the actual values
+    plt.plot(x_train.detach(), y_train.detach(), 'o', label='$(x^{(i)},y^{(i)})$', color='blue')
+    plt.plot(x_train.detach(), model.forward(x_train).detach(), '-', color='red', label='$\\hat y = f(x) = xW+b$')
+    plt.legend()
     plt.show()
 
 
