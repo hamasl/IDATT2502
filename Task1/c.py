@@ -26,8 +26,6 @@ def main():
     model = Model()
     loss_fun = torch.nn.MSELoss(reduction="mean")
     optimizer = torch.optim.SGD([model.w, model.b], lr=learning_rate)
-    x_train = x_train
-    y_train = y_train
 
     for epoch in range(num_epoch):
         y_hat = model(x_train)
