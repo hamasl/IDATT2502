@@ -60,9 +60,7 @@ def main():
             y_grid[i, j] = model.forward(torch.reshape(torch.tensor([x1_grid[i, j], x2_grid[i, j]]), (1, 2)))
 
     # Because of bug in matplotlib facecolors2d and edgecolors2d have to be defined to be able to add the legend
-    surface = ax.plot_wireframe(x1_grid, x2_grid, y_grid, color="red", label="$\\hat y = f(x1,x2) = sigmoid(x*W+b)$", rstride=5, cstride=5)
-    #surface._facecolors2d = surface._facecolor3d
-    #surface._edgecolors2d = surface._edgecolor3d
+    ax.plot_wireframe(x1_grid, x2_grid, y_grid, color="red", label="$\\hat y = f(x1,x2) = sigmoid(x*W+b)$", rstride=5, cstride=5)
     ax.legend()
 
     # Showing plot
