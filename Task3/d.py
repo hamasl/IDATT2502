@@ -39,7 +39,7 @@ def run_model(model):
         print("accuracy = %s" % model.accuracy(x_test, y_test))
 
 class ConvolutionalNeuralNetworkModel(nn.Module):
-    def __init__(self):
+    def __init__(self, device):
         super(ConvolutionalNeuralNetworkModel, self).__init__()
 
         # Model layers (includes initialized model variables):
@@ -52,7 +52,7 @@ class ConvolutionalNeuralNetworkModel(nn.Module):
                                     nn.ReLU(),
                                     nn.Flatten(),
                                     nn.Linear(128 * 7 * 7, 1024),
-                                    nn.Linear(1024, 10))
+                                    nn.Linear(1024, 10)).to(device)
 
     # Predictor
     def f(self, x):
@@ -68,4 +68,6 @@ class ConvolutionalNeuralNetworkModel(nn.Module):
 
 
 if __name__ == "__main__":
-    run_model(ConvolutionalNeuralNetworkModel())
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print(f"Running on device: {device}")
+    #run_model(ConvolutionalNeuralNetworkModel(device))
