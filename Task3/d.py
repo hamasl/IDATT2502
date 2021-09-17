@@ -3,7 +3,7 @@ import torch.nn as nn
 import torchvision
 
 
-def run_model(model):
+def run_model(model, device):
     # Load observations from the mnist dataset. The observations are divided into a training set and a test set
     mnist_train = torchvision.datasets.FashionMNIST('./fashion-data', train=True, download=True)
     x_train = mnist_train.data.reshape(-1, 1, 28,
@@ -32,24 +32,26 @@ def run_model(model):
     optimizer = torch.optim.Adam(model.parameters(), 0.001)
     for epoch in range(20):
         for batch in range(len(x_train_batches)):
-            model.loss(x_train_batches[batch], y_train_batches[batch]).backward()  # Compute loss gradients
+            model.loss(x_train_batches[batch].to(device), y_train_batches[batch].to(device)).backward()  # Compute loss gradients
             optimizer.step()  # Perform optimization by adjusting W and b,
             optimizer.zero_grad()  # Clear gradients for next step
 
-        print("accuracy = %s" % model.accuracy(x_test, y_test))
+        print("accuracy = %s" % model.accuracy(x_test.to(device), y_test.to(device)))
 
 class ConvolutionalNeuralNetworkModel(nn.Module):
     def __init__(self, device):
         super(ConvolutionalNeuralNetworkModel, self).__init__()
 
         # Model layers (includes initialized model variables):
-        self.logits = nn.Sequential(nn.Conv2d(1, 32, kernel_size=1),
+        self.logits = nn.Sequential(
+                                    nn.Conv2d(1, 32, kernel_size=3, padding=1),
+                                    nn.ReLU(),
                                     nn.Conv2d(32, 64, kernel_size=3, padding=1),
-                                    nn.MaxPool2d(kernel_size=2),
                                     nn.ReLU(),
+                                    nn.MaxPool2d(kernel_size=2),
                                     nn.Conv2d(64, 128, kernel_size=3, padding=1),
-                                    nn.MaxPool2d(kernel_size=2),
                                     nn.ReLU(),
+                                    nn.MaxPool2d(kernel_size=2),
                                     nn.Flatten(),
                                     nn.Linear(128 * 7 * 7, 1024),
                                     nn.Linear(1024, 10)).to(device)
@@ -60,14 +62,16 @@ class ConvolutionalNeuralNetworkModel(nn.Module):
 
     # Cross Entropy loss
     def loss(self, x, y):
-        return nn.functional.cross_entropy(self.logits(x), y.argmax(1))
+        return nn.functional.cross_entropy(self.logits(x), y.argmax(1)).to(device)
 
     # Accuracy
     def accuracy(self, x, y):
-        return torch.mean(torch.eq(self.f(x).argmax(1), y.argmax(1)).float())
+        return torch.mean(torch.eq(self.f(x).argmax(1), y.argmax(1)).float()).to(device)
 
 
 if __name__ == "__main__":
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(f"Running on device: {device}")
-    #run_model(ConvolutionalNeuralNetworkModel(device))
+    model = ConvolutionalNeuralNetworkModel(device)
+    model.to(device)
+    run_model(model, device)
