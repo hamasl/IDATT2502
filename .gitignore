@@ -5,4 +5,5 @@
 */data
 *fashion-data
 *.data
-Features.ipynb
+lecture.ipynb
+.DS_Store
