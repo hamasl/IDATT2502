@@ -8,32 +8,15 @@ import numpy as np
 class Bucketed_Q_Table():
     def __init__(self, observation_space, action_space, num_of_buckets):
         self._buckets = self._create_buckets(observation_space, num_of_buckets)
-        #self._buckets = self._create_buckets_v2()
         self._table = np.zeros(([num_of_buckets] * len(observation_space.high) + [action_space.n]))
-        print(self._buckets)
-        # print(self._table.shape)
 
     def _create_buckets(self, observation_space, num_of_buckets):
         num_of_observations = len(observation_space.high)
-        # print(observation_space.high)
-        # print(observation_space.low)
         bucks = []
         for i in range(num_of_observations):
             # Since a bucket contains values between linspace entries the linspace needs one more element than the number of buckets
             bucks.append(np.linspace(observation_space.low[i], observation_space.high[i], num_of_buckets + 1))
         return bucks
-
-    def _create_buckets_v2(self):
-        numBins = 20
-        obsSpaceSize = len(env.observation_space.high)
-
-        # Get the size of each bucket
-        return [
-            np.linspace(-4.8, 4.8, numBins),
-            np.linspace(-4, 4, numBins),
-            np.linspace(-.418, .418, numBins),
-            np.linspace(-4, 4, numBins)
-        ]
 
     def _get_bucket_index(self, observation_num, observation):
         for i in range(len(self._buckets[observation_num]) - 1):
@@ -69,7 +52,6 @@ class Bucketed_Q_Table():
 
 def run_finished(q_table, k):
     env = gym.make("CartPole-v0")
-    print("Running final")
     for episode_num in range(k):
         done = False
         observation = env.reset()
@@ -86,7 +68,7 @@ if __name__ == '__main__':
     DISCOUNT_FACTOR = 0.95
     LEARNING_RATE = 0.1
 
-    eps = lambda episode: (NUM_OF_EPISODES - episode) / NUM_OF_EPISODES
+    eps = lambda episode: max((NUM_OF_EPISODES - 2*episode) / NUM_OF_EPISODES, 0)
 
     env = gym.make("CartPole-v0")
 
