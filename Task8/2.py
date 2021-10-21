@@ -134,7 +134,7 @@ if __name__ == '__main__':
     # Using coordinates of form y,x because rows is the first index in the tiles array
     # May change this later, but I don't have time for it right now.
     FINISH_POS = (3, 2)
-    env = GridWorld(50, DIMENSION, FINISH_POS)
+    env = GridWorld(BLOCK_SIZE, DIMENSION, FINISH_POS)
     pygame.init()
 
     q_table = np.zeros([DIMENSION] * 2 + [env.num_of_actions()])
