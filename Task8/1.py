@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-# TODO create bins for the observations
 class Bucketed_Q_Table():
     def __init__(self, observation_space, action_space, num_of_buckets):
         self._buckets = self._create_buckets(observation_space, num_of_buckets)
@@ -25,7 +24,6 @@ class Bucketed_Q_Table():
                 print(observation_num)
             if self._buckets[observation_num][i] <= observation < self._buckets[observation_num][i + 1]:
                 return i
-        print("OBS")
         return -1
 
     def optimal_choice(self, observations):

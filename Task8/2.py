@@ -157,7 +157,7 @@ if __name__ == '__main__':
             observation = new_observation
             epochs_run += 1
         if episode_num % 100 == 0:
-            print(f"Episode num: {episode_num}, epochs run: {epochs_run},")
+            print(f"Episode num: {episode_num}, epochs run: {epochs_run}.")
         epochs_run_tbl.append(epochs_run)
 
     plt.plot(epochs_run_tbl, label="Epochs run for each episode")
